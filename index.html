@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Ti 💕</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #ff385c;
+            --primary-dark: #e31c5f;
+            --bg-gradient-1: #1a1a2e;
+            --bg-gradient-2: #16213e;
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            min-height: 100vh;
+            background: var(--bg-gradient-1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Fondo con imagen de tu novia */
+        .background-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .background-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: blur(20px) brightness(0.7);
+            transform: scale(1.1);
+        }
+
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, 
+                rgba(26, 26, 46, 0.75) 0%, 
+                rgba(22, 33, 62, 0.85) 50%,
+                rgba(26, 26, 46, 0.9) 100%);
+            z-index: 1;
+        }
+
+        /* Partículas animadas de fondo */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 56, 92, 0.3);
+            border-radius: 50%;
+            animation: float 15s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* Contenedor principal */
+        .player-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(40px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 50px 40px;
+            max-width: 420px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Artwork */
+        .artwork-container {
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .artwork {
+            width: 100%;
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(255, 56, 92, 0.3);
+        }
+
+        .artwork::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.1) 50%,
+                transparent 70%
+            );
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%) translateY(-100%) rotate(45deg);
+            }
+            100% {
+                transform: translateX(100%) translateY(100%) rotate(45deg);
+            }
+        }
+
+        .artwork-icon {
+            font-size: 120px;
+            position: relative;
+            z-index: 2;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .artwork.playing .artwork-icon {
+            animation: pulse-fast 0.8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes pulse-fast {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        /* Información de la canción */
+        .song-info {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .song-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .artist-name {
+            font-size: 15px;
+            color: var(--text-secondary);
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        /* Barra de progreso */
+        .progress-section {
+            margin-bottom: 30px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 10px;
+            width: 0%;
+            position: relative;
+            transition: width 0.1s linear;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .progress-bar:hover .progress-fill::after {
+            opacity: 1;
+        }
+
+        .time-display {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        /* Controles */
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .control-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+
+        .play-btn {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border: none;
+            font-size: 22px;
+            box-shadow: 0 8px 24px rgba(255, 56, 92, 0.4);
+        }
+
+        .play-btn:hover {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            box-shadow: 0 12px 32px rgba(255, 56, 92, 0.5);
+            transform: scale(1.08);
+        }
+
+        /* Volumen */
+        .volume-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .volume-icon {
+            color: var(--text-secondary);
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 24px;
+        }
+
+        .volume-icon:hover {
+            color: var(--text-primary);
+            transform: scale(1.1);
+        }
+
+        .volume-slider {
+            flex: 1;
+            height: 4px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .volume-slider::-webkit-slider-thumb:hover {
+            background: var(--primary-dark);
+            transform: scale(1.2);
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .volume-slider::-moz-range-thumb:hover {
+            background: var(--primary-dark);
+            transform: scale(1.2);
+        }
+
+        /* Onda de audio (visual) */
+        .audio-wave {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            height: 40px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .wave-bar {
+            width: 3px;
+            background: var(--primary);
+            border-radius: 3px;
+            animation: wave 1s ease-in-out infinite;
+        }
+
+        .wave-bar:nth-child(1) { height: 12px; animation-delay: 0s; }
+        .wave-bar:nth-child(2) { height: 24px; animation-delay: 0.1s; }
+        .wave-bar:nth-child(3) { height: 18px; animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { height: 30px; animation-delay: 0.3s; }
+        .wave-bar:nth-child(5) { height: 16px; animation-delay: 0.4s; }
+
+        .audio-wave.playing .wave-bar {
+            opacity: 1;
+        }
+
+        .audio-wave:not(.playing) .wave-bar {
+            animation: none;
+            height: 4px !important;
+        }
+
+        @keyframes wave {
+            0%, 100% {
+                transform: scaleY(1);
+            }
+            50% {
+                transform: scaleY(1.5);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .player-card {
+                padding: 40px 30px;
+            }
+
+            .song-title {
+                font-size: 22px;
+            }
+
+            .artwork-icon {
+                font-size: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Imagen de fondo -->
+    <div class="background-image">
+        <!-- 🖼️ CAMBIA ESTA URL POR LA FOTO DE TU NOVIA 🖼️ -->
+        <img src="https://i.ibb.co/yFkPTRYG/IMG-20250424-WA0009.jpg" alt="Background" id="bgImage">
+    </div>
+    
+    <!-- Overlay de color -->
+    <div class="background-overlay"></div>
+    
+    <!-- Partículas de fondo -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Reproductor -->
+    <div class="player-card">
+        <!-- Artwork -->
+        <div class="artwork-container">
+            <div class="artwork" id="artwork">
+                <div class="artwork-icon">❤️</div>
+            </div>
+        </div>
+
+        <!-- Información de la canción -->
+        <div class="song-info">
+            <div class="song-title">Para Ti, Mi Querida Evelyn 💖</div>
+            <div class="artist-name">Con Todo Mi Corazón</div>
+        </div>
+
+        <!-- Onda de audio visual -->
+        <div class="audio-wave" id="audioWave">
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+        </div>
+
+        <!-- Barra de progreso -->
+        <div class="progress-section">
+            <div class="progress-bar" id="progressBar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="time-display">
+                <span id="currentTime">0:00</span>
+                <span id="totalTime">0:00</span>
+            </div>
+        </div>
+
+        <!-- Controles -->
+        <div class="controls">
+            <button class="control-btn" id="prevBtn">⏮</button>
+            <button class="control-btn play-btn" id="playBtn">▶️</button>
+            <button class="control-btn" id="nextBtn">⏭</button>
+        </div>
+
+        <!-- Volumen -->
+        <div class="volume-section">
+            <span class="volume-icon" id="volumeIcon">🔊</span>
+            <input type="range" min="0" max="100" value="70" class="volume-slider" id="volumeSlider">
+        </div>
+    </div>
+
+    <!-- Audio -->
+    <audio id="audio">
+        <!-- 🎵 CAMBIA ESTA URL POR TU CANCIÓN 🎵 -->
+        <source src="https://dl.dropbox.com/scl/fi/bf30zif6i8896bb749dub/Amor-de-Febrero.mp3?rlkey=1xgpxpbtnhmgqr0i25pwqz088&st=o6ritl1x&dl=0" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // 🎵 CONFIGURACIÓN - Cambia la URL de tu canción aquí 🎵
+        const SONG_URL = "https://dl.dropbox.com/scl/fi/bf30zif6i8896bb749dub/Amor-de-Febrero.mp3?rlkey=1xgpxpbtnhmgqr0i25pwqz088&st=o6ritl1x&dl=0";
+        
+        // 🖼️ CONFIGURACIÓN - URL de la foto de tu novia 🖼️
+        const BACKGROUND_IMAGE_URL = "https://i.ibb.co/yFkPTRYG/IMG-20250424-WA0009.jpg";
+        
+        // 🎨 AJUSTA EL DESENFOQUE (blur) - valores: 10, 20, 30, 40, etc.
+        const BLUR_AMOUNT = 20; // Cambia este número para más o menos desenfoque
+        
+        // Elementos
+        const audio = document.getElementById('audio');
+        const playBtn = document.getElementById('playBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const artwork = document.getElementById('artwork');
+        const audioWave = document.getElementById('audioWave');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const currentTime = document.getElementById('currentTime');
+        const totalTime = document.getElementById('totalTime');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeIcon = document.getElementById('volumeIcon');
+        const bgImage = document.getElementById('bgImage');
+
+        // Estado
+        let isPlaying = false;
+
+        // Configurar canción y fondo
+        audio.src = SONG_URL;
+        audio.volume = 0.7;
+        
+        // Configurar imagen de fondo con blur personalizado
+        if (BACKGROUND_IMAGE_URL && BACKGROUND_IMAGE_URL !== "TU_URL_AQUI") {
+            bgImage.src = BACKGROUND_IMAGE_URL;
+            bgImage.style.filter = `blur(${BLUR_AMOUNT}px) brightness(0.7)`;
+        }
+
+        // Crear partículas
+        function createParticles() {
+            const particles = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+                particles.appendChild(particle);
+            }
+        }
+
+        // Formatear tiempo
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Play/Pause
+        playBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                audio.pause();
+                playBtn.textContent = '▶️';
+                artwork.classList.remove('playing');
+                audioWave.classList.remove('playing');
+            } else {
+                audio.play();
+                playBtn.textContent = '⏸';
+                artwork.classList.add('playing');
+                audioWave.classList.add('playing');
+            }
+            isPlaying = !isPlaying;
+        });
+
+        // Botones anterior/siguiente (puedes personalizarlos)
+        prevBtn.addEventListener('click', () => {
+            audio.currentTime = 0;
+        });
+
+        nextBtn.addEventListener('click', () => {
+            audio.currentTime = 0;
+        });
+
+        // Actualizar duración
+        audio.addEventListener('loadedmetadata', () => {
+            totalTime.textContent = formatTime(audio.duration);
+        });
+
+        // Actualizar progreso
+        audio.addEventListener('timeupdate', () => {
+            const progress = (audio.currentTime / audio.duration) * 100;
+            progressFill.style.width = progress + '%';
+            currentTime.textContent = formatTime(audio.currentTime);
+        });
+
+        // Barra de progreso clickeable
+        progressBar.addEventListener('click', (e) => {
+            const rect = progressBar.getBoundingClientRect();
+            const percent = (e.clientX - rect.left) / rect.width;
+            audio.currentTime = percent * audio.duration;
+        });
+
+        // Control de volumen
+        volumeSlider.addEventListener('input', (e) => {
+            const volume = e.target.value / 100;
+            audio.volume = volume;
+            updateVolumeIcon(volume);
+        });
+
+        function updateVolumeIcon(volume) {
+            if (volume === 0) {
+                volumeIcon.textContent = '🔇';
+            } else if (volume < 0.5) {
+                volumeIcon.textContent = '🔉';
+            } else {
+                volumeIcon.textContent = '🔊';
+            }
+        }
+
+        // Click en icono de volumen
+        volumeIcon.addEventListener('click', () => {
+            if (audio.volume > 0) {
+                audio.volume = 0;
+                volumeSlider.value = 0;
+                volumeIcon.textContent = '🔇';
+            } else {
+                audio.volume = 0.7;
+                volumeSlider.value = 70;
+                volumeIcon.textContent = '🔊';
+            }
+        });
+
+        // Cuando termina la canción
+        audio.addEventListener('ended', () => {
+            isPlaying = false;
+            playBtn.textContent = '▶️';
+            artwork.classList.remove('playing');
+            audioWave.classList.remove('playing');
+            audio.currentTime = 0;
+        });
+
+        // Inicializar
+        createParticles();
+    </script>
+</body>
+</html>
